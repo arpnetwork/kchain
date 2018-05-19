@@ -10,12 +10,9 @@
 #include <regex>
 
 #include <cstdio>
-#include <ctime>
 
 using std::map;
 using std::regex;
-
-#include <iostream>
 
 struct Block
 {
@@ -74,6 +71,7 @@ int main(int argc, char *argv[])
       {
         std::puts("1");
       }
+      std::fflush(stdout);
     }
     else if (std::regex_match(buf, m, p_leader))
     {
@@ -87,6 +85,7 @@ int main(int argc, char *argv[])
       {
         std::puts("1");
       }
+      std::fflush(stdout);
     }
   }
 
