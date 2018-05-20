@@ -49,8 +49,12 @@ int main(int argc, char *argv[])
 {
   BlockTree btree;
 
+  // Insert command `i <id> <parent>`
   regex p_insert("^\\s*i\\s+(\\d+)\\s(\\d+)\\s*$");
+  // Leader query command `l <id>`
   regex p_leader("^\\s*l\\s+(\\d+)\\s*$");
+  // Chain query command `c <id> <max>`
+  regex p_chain("^\\s*c\\s+(\\d+)\\s(\\d+)\\s*$");
 
   char buf[BUFSIZ];
   while (std::fgets(buf, BUFSIZ, stdin) != nullptr)
@@ -80,6 +84,28 @@ int main(int argc, char *argv[])
       if (block != nullptr)
       {
         std::printf("0 %d %d\n", block->id, block->depth);
+      }
+      else
+      {
+        std::puts("1");
+      }
+      std::fflush(stdout);
+    }
+    else if (std::regex_match(buf, m, p_chain))
+    {
+      int id = parse_int(m[1]);
+      int max = parse_int(m[2]);
+      auto block = btree.leader(id);
+      if (block != nullptr)
+      {
+        std::printf("0");
+
+        Block *pb = block;
+        for (auto i = 0; i < max && pb != nullptr; i++, pb = pb->parent)
+        {
+          std::printf(" %d", pb->id);
+        }
+        std::puts("");
       }
       else
       {
