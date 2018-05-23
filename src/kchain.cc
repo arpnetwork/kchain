@@ -141,9 +141,9 @@ BlockTree::BlockTree()
 
 BlockTree::~BlockTree()
 {
-  for (auto &&[id, block] : blocks)
+  for (auto it : blocks)
   {
-    delete block;
+    delete it.second;
   }
 }
 
