@@ -61,6 +61,9 @@ int main(int argc, char *argv[])
   {
     auto parse_int = [](const std::csub_match &sm) { return std::strtol(sm.str().c_str(), nullptr, 10); };
 
+    int result = 0;
+    auto items = std::vector<int>();
+
     std::cmatch m;
     if (std::regex_match(buf, m, p_insert))
     {
@@ -69,13 +72,8 @@ int main(int argc, char *argv[])
       auto block = btree.insert(id, parent);
       if (block != nullptr)
       {
-        std::printf("0 %d\n", block->depth);
+        items.push_back(block->depth);
       }
-      else
-      {
-        std::puts("1");
-      }
-      std::fflush(stdout);
     }
     else if (std::regex_match(buf, m, p_leader))
     {
@@ -83,13 +81,9 @@ int main(int argc, char *argv[])
       auto block = btree.leader(id);
       if (block != nullptr)
       {
-        std::printf("0 %d %d\n", block->id, block->depth);
+        items.push_back(block->id);
+        items.push_back(block->depth);
       }
-      else
-      {
-        std::puts("1");
-      }
-      std::fflush(stdout);
     }
     else if (std::regex_match(buf, m, p_chain))
     {
@@ -98,21 +92,32 @@ int main(int argc, char *argv[])
       auto block = btree.leader(id);
       if (block != nullptr)
       {
-        std::printf("0");
-
         Block *pb = block;
         for (auto i = 0; i < max && pb != nullptr; i++, pb = pb->parent)
         {
-          std::printf(" %d", pb->id);
+          items.push_back(pb->id);
         }
-        std::puts("");
       }
-      else
-      {
-        std::puts("1");
-      }
-      std::fflush(stdout);
     }
+    else
+    {
+      result = 255;
+    }
+
+    if (!items.empty())
+    {
+      std::printf("0");
+      for (auto it : items)
+      {
+        std::printf(" %d", it);
+      }
+      std::printf("\n");
+    }
+    else
+    {
+      std::printf("%d\n", result > 0 ? result : 1);
+    }
+    std::fflush(stdout);
   }
 
   return std::ferror(stdin);
